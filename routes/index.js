@@ -3,6 +3,7 @@ var router = express.Router();
 var AWS = require("aws-sdk");
 
 var queryOthers = require('../controllers/queryOthers.controllers');
+var authMiddleware = require('../middleware/auth.middleware');
 
 AWS.config.update({
   region: "us-west-2",

@@ -68,6 +68,7 @@ promise.then(function(categories) {
 
 // Danh sách sản phẩm hot --> với từng sản phẩm đó thì hiển thị ra tất cả thông tin của sản phẩm
 
+// Call DynamoDB API to get list productID
 function getListProductID(){
     return new Promise((resolve,reject) => {
         docClient.query(paramsHot, function(err, data) {
@@ -75,11 +76,12 @@ function getListProductID(){
                 console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
                 reject();
             } else {
-                return resolve(data.Items)
+                resolve(data.Items)
             }
         });
     })
 }
+
 
 function asyncFunction(item) {
     
@@ -107,6 +109,7 @@ function asyncFunction(item) {
 module.exports.Index = async function Init(res) {
     var array = await getListProductID();
     
+    // foreach productID to get all
     let promiseArray = array.map(asyncFunction);
 
     Promise.all(promiseArray).then(result => {
