@@ -4,15 +4,8 @@ var AWS = require("aws-sdk");
 
 var queryOthers = require('../controllers/queryOthers.controllers');
 var authMiddleware = require('../middleware/auth.middleware');
+var cartController = require('../controllers/cart.controllers');
 
-AWS.config.update({
-  region: "us-west-2",
-  accessKeyId: "accessKeyId",
-  secretAccessKey: "secretAccessKey",
-  endpoint: "http://localhost:8000"
-});
-
-var docClient = new AWS.DynamoDB.DocumentClient();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -31,6 +24,28 @@ router.get('/product', function(req, res, next) {
 router.get('/cart', function(req, res, next) {
   res.render('cart', { selected: 3 });
 });
+
+router.get('/cart/:id', async function(req, res, next) {
+  
+  var userID = req.signedCookies.userID;
+  var productID = req.params.id;
+
+  var isValid = await cartController.checkUserIDValid(userID);
+
+  console.log(isValid);
+
+  if(isValid) {
+    //res.render('cart', { selected: 3 });
+
+    var orderID = await cartController.getCartID(userID);
+
+    await cartController.addProductToOrder(orderID,productID);
+  }
+
+  console.log('OK');
+});
+
+
 
 router.get('/checkout', function(req, res, next) {
   res.render('checkout', { selected: 4 });
