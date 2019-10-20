@@ -18,6 +18,7 @@ router.get('/shop', function(req, res, next) {
 });
 
 router.get('/product', function(req, res, next) {
+  //console.log(req.cookies.ppkcookie);
   res.render('product', { selected: 2 });
 });
 
@@ -25,7 +26,7 @@ router.get('/cart', function(req, res, next) {
   res.render('cart', { selected: 3 });
 });
 
-router.get('/cart/:id', async function(req, res, next) {
+router.post('/cart/:id', async function(req, res, next) {
   
   var userID = req.signedCookies.userID;
   var productID = req.params.id;
@@ -39,13 +40,18 @@ router.get('/cart/:id', async function(req, res, next) {
 
     var orderID = await cartController.getCartID(userID);
 
-    await cartController.addProductToOrder(orderID,productID);
+    try {
+      await cartController.addProductToOrder(orderID,productID);
+
+      res.status(200).send('OK');
+    }
+    catch(err) {
+      res.status(400).send(err);
+    }
   }
 
-  console.log('OK');
+  res.status(400).send("Failed");
 });
-
-
 
 router.get('/checkout', function(req, res, next) {
   res.render('checkout', { selected: 4 });
