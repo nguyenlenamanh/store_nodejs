@@ -5,7 +5,7 @@ var AWS = require("aws-sdk");
 var queryOthers = require('../controllers/queryOthers.controllers');
 var authMiddleware = require('../middleware/auth.middleware');
 var cartController = require('../controllers/cart.controllers');
-
+var shopController = require('../controllers/shop.controllers');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -14,8 +14,14 @@ router.get('/', function(req, res, next) {
 
 
 router.get('/shop', function(req, res, next) {
-  res.render('shop', { selected: 1 });
+  shopController.getAllCategory(res);
 });
+router.get('/shop/:category', function(req, res, next) {
+  shopController.getProductByCategory(req,res);
+});
+router.get('/Filter',function(req,res,next){
+  shopController.Filter(req,res);
+})
 
 router.get('/product', function(req, res, next) {
   //console.log(req.cookies.ppkcookie);
