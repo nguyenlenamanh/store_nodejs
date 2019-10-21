@@ -69,9 +69,11 @@
 
                 <!--  Catagories  -->
                 <div class="catagories-menu">
-                    <ul>
+                    <ul id="category-menu" >
                         <% category.forEach(function(item){ %>
-                            <li class="active"><a href="#" data-link-type="/shop/<%=item.SortKey%>" onclick="getProduct(this)"><%=item.SortKey%></a></li>
+                            <li class="active">
+                                <a href="#" data-link-type="/shop/<%=item.SortKey%>" onclick="getProduct(this)" class="category-list"><%=item.SortKey%></a>
+                            </li>
                         <% }); %>
                     </ul>
                 </div>
@@ -79,7 +81,7 @@
 
             <!-- ##### Single Widget ##### -->
             <div class="widget brands mb-50" id="brand">
-                
+                    <%- include brand.ejs %>
             </div>
 
             <!-- ##### Single Widget ##### -->
@@ -117,7 +119,7 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-primary" style="margin:0 auto;width:150px;" onclick="Filter()">Filter</button>
+            <button class="btn btn-primary" style="margin:0 auto;width:150px;" onclick="Filter(this)">Filter</button>
         </div>
 
         <div class="amado_product_area section-padding-100">
@@ -149,11 +151,11 @@
                                 <div class="view-product d-flex align-items-center">
                                     <p>View</p>
                                     <form action="#" method="get">
-                                        <select name="select" id="viewProduct">
-                                            <option value="value">12</option>
-                                            <option value="value">24</option>
-                                            <option value="value">48</option>
-                                            <option value="value">96</option>
+                                        <select name="select" id="viewProduct" onchange="Change(this)">
+                                            <option value="6">6</option>
+                                            <option value="12">12</option>
+                                            <option value="24">24</option>
+                                            <option value="48">48</option>
                                         </select>
                                     </form>
                                 </div>
@@ -163,10 +165,10 @@
                 </div>
 
                 <div class="row" id="listProduct">
-
+                        <%- include content.ejs %>
                 </div>
                 <div class="row" id="pagination">
-
+                        <%- include pagination.ejs %>
                 </div>
             </div>
         </div>
@@ -251,17 +253,20 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
     <!-- ##### Footer Area End ##### -->
 
     <!-- ##### jQuery (Necessary for All JavaScript Plugins) ##### -->
-    <script src="js/jquery/jquery-2.2.4.min.js"></script>
-    <!-- Popper js -->
-    <script src="js/popper.min.js"></script>
-    <!-- Bootstrap js -->
-    <script src="js/bootstrap.min.js"></script>
-    <!-- Plugins js -->
-    <script src="js/plugins.js"></script>
-    <!-- Active js -->
-    <script src="js/active.js"></script>
-    <!--My Scrit-->
-    <script src="js/ScriptProduct.js"></script>
+   <div id="script">
+        <script src="js/jquery/jquery-2.2.4.min.js"></script>
+        <!-- Popper js -->
+        <script src="js/popper.min.js"></script>
+        <!-- Bootstrap js -->
+        <script src="js/bootstrap.min.js"></script>
+        <!-- Plugins js -->
+        <script src="js/plugins.js"></script>
+        <!-- Active js -->
+        <script src="js/active.js"></script>
+        <!--My Scrit-->
+        <script src="js/ScriptProduct.js"></script>
+        <script src="js/handle.js" id="handle"></script>
+   </div>
 </body>
 
 </html>

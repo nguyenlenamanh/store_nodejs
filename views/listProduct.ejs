@@ -1,23 +1,23 @@
     <!-- ##### Single Widget ##### -->
     <!-- Widget Title -->
     <h6 class="widget-title mb-30">Brands</h6>
-
     <div class="widget-desc">
-        <%var brand_enter%>
+        <%var brand_enter = []%>
         <%brand.forEach(function(brand) { %>
-            <%if(brand_enter == ""){%> <!-- Single Form Check -->
+            <%if(brand_enter.length == 0 && brand.Brand != ""){%> 
+                <!-- Single Form Check -->
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="<%=brand.Brand%>" id="<%=brand.Brand%>">
                     <label class="form-check-label" for="<%=brand.Brand%>"><%=brand.Brand%></label>
                 </div>
-                <%brand_enter = brand.Brand%>
+                <%brand_enter.push(brand.Brand)%>
             <%}
-            else if(brand_enter != brand.Brand){%>
+            else if(brand_enter.includes(brand.Brand) == false){%>
                 <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="<%=brand.Brand%>" id="<%=brand.Brand%>">
                         <label class="form-check-label" for="<%=brand.Brand%>"><%=brand.Brand%></label>
-                    </div>
-                <%brand_enter = brand.Brand%>
+                </div>
+                <%brand_enter.push(brand.Brand)%>
             <%}%>
         <%})%>
     </div>
@@ -39,9 +39,6 @@
                         <div class="product-meta-data">
                             <div class="line"></div>
                             <p class="product-price">$<%=product.Price%></p>
-                            <a href="/product/<%=product.ProductID%>">
-                                <h6><%=product.CategoryName%></h6>
-                            </a>
                         </div>
                         <!-- Ratings & Cart -->
                         <div class="ratings-cart text-right">
@@ -53,7 +50,7 @@
                                 <i class="fa fa-star" aria-hidden="true"></i>
                             </div>
                             <div class="cart">
-                                <a href="#" data-toggle="tooltip" data-placement="left" title="Add to Cart" value="<%=product.ProductID%>">
+                                <a href="#" class="addtoCart" data-toggle="tooltip" data-placement="left" title="Add to Cart" value="<%=product.ProductID%>">
                                     <img src="img/core-img/cart.png" alt="">
                                 </a>
                             </div>
@@ -66,19 +63,31 @@
         <div class="col-12">
             <!-- Pagination -->
             <nav aria-label="navigation">
-                <ul class="pagination justify-content-end mt-50">
-                        <%var count = QProduct/products.length + 1 %>
-                        <%for(var i = 1;i <= count;i++) { %>
-                            <%if(i == 1){%>
-                                <li class="page-item active">
-                                    <a class="page-link" href="#" data-link-type="/shop/<%=objLast.CategoryName%>" data-id="<%=objLast.ProductID%>" onclick="getProduct(this)"><%=i%></a>
-                                </li>
-                            <%}else{%>%>          
-                                <li class="page-item">
-                                        <a class="page-link" href="#" data-link-type="/shop/<%=objLast.CategoryName%>" data-id="<%=objLast.ProductID%>" onclick="getProduct(this)"><%=i%></a>
-                                </li>
+                <ul class="pagination justify-content-end mt-50" id="list-page">
+                        <%var page%>
+                        <%if(QProduct%limit == 0) page = QProduct/limit
+                        else page = QProduct/limit + 1%>
+                        <%if(typeof(objLast) != "undefined"){%>
+                            <%for(var i = 1;i<= page ;i++){%>
+                                <%if(i == 1){%>
+                                    <li class="page-item active">
+                                            <a class="page-link" href="#" data-link-type="/shop/<%=objLast.CategoryName%>" data-id="P<%=parseInt(objLast.ProductID.split('P')[1]) - limit%>" onclick="GetProductPage(this)"><%=i%></a>
+                                    </li>
+                                <%}else if(i == 2){%>
+                                    <li class="page-item active">
+                                            <a class="page-link" href="#" data-link-type="/shop/<%=objLast.CategoryName%>" data-id="P<%=parseInt(objLast.ProductID.split('P')[1])%>" onclick="GetProductPage(this)"><%=i%></a>
+                                    </li>
+                                <%}else{%>
+                                    <li class="page-item active">
+                                            <a class="page-link" href="#" data-link-type="/shop/<%=objLast.CategoryName%>" data-id="P<%=parseInt(objLast.ProductID.split('P')[1]) + limit* (i-2)%>" onclick="GetProductPage(this)"><%=i%></a>
+                                    </li>
+                                <%}%>
                             <%}%>
                         <%}%>
                 </ul>
             </nav>
         </div>
+<p>split</p>
+        js/handle.js
+
+    

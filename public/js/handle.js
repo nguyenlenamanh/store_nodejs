@@ -21,8 +21,8 @@ function eraseCookie(name) {
     document.cookie = name+'=; Max-Age=-99999999;';  
 }
 
-$("#addtoCart").on('click', function() {
-    //alert($(this).attr('value'));
+$(".addtoCart").on('click', function() {
+    alert("Access");
 
     var userID = getCookie('userID');
 

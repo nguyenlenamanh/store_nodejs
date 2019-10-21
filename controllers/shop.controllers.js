@@ -30,7 +30,24 @@ module.exports.getAllCategory = (res) => {
         });
     }).then(result => {
         console.log(result);
-        res.render('shop', { selected: 1,category : result });
+        var paramsAllProductByCategory = {
+            TableName : "Products",
+            KeyConditionExpression: "CategoryName = :categoryName",
+            ExpressionAttributeValues: {
+                ":categoryName": result[0].SortKey
+            },
+            Limit : 6
+        };
+        docClient.query(paramsAllProductByCategory, function(err, data) {
+            if (err) {
+                console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+                reject();
+            } else {
+                console.log("Query succeeded.");
+                res.render('shop', { selected: 1,category : result,list_product : data.Items,brand:data.Items,objLast : data.LastEvaluatedKey,QProduct : data.Items.length,limit:6 });
+            }
+        });
+        
     });
 };
 module.exports.getProductByCategory = (req,res) => {
@@ -47,6 +64,18 @@ module.exports.getProductByCategory = (req,res) => {
         
     }
     else {
+        paramsAllProductByCategory = {
+            TableName : "Products",
+            KeyConditionExpression: "CategoryName = :categoryName",
+            ExclusiveStartKey: {
+                "CategoryName": req.params.category,
+                "ProductID": req.query.pid      
+            },
+            ExpressionAttributeValues: {
+                ":categoryName": req.params.category,
+            },
+            Limit : parseInt(req.query.Limit)
+        }
         paramsAllProductByCategory = {
             TableName : "Products",
             KeyConditionExpression: "CategoryName = :categoryName",
@@ -85,7 +114,7 @@ module.exports.getProductByCategory = (req,res) => {
                 reject();
             } else {
                 console.log("Query succeeded.");
-                res.render('listProduct', { products : result.Items ,brand : result.Items,objLast : result.LastEvaluatedKey,QProduct : data.Items.length});
+                res.render('listProduct', { products : result.Items ,brand : result.Items,objLast : result.LastEvaluatedKey,QProduct : data.Items.length,limit:req.query.Limit});
             }
         });
         
@@ -110,7 +139,8 @@ function CreateParams(req){
                 ":color" : req.query.color,
                 ":minPrice" : parseInt(req.query.minPrice),
                 ":maxPrice" : parseInt(req.query.maxPrice)
-            }
+            },
+            Limit : parseInt(req.query.Limit)
         }
         
     }
@@ -124,7 +154,8 @@ function CreateParams(req){
                 ":categoryName": req.query.category,
                 ":brand" : req.query.brand,
                 ":color" : req.query.color,
-            }
+            },
+            Limit : parseInt(req.query.Limit)
         }
     }
     else if(req.query.brand != "" && req.query.minPrice != "" && req.query.maxPrice != ""){
@@ -138,7 +169,8 @@ function CreateParams(req){
                 ":brand" : req.query.brand,
                 ":minPrice" : parseInt(req.query.minPrice),
                 ":maxPrice" : parseInt(req.query.maxPrice)
-            }
+            },
+            Limit : parseInt(req.query.Limit)
         }
     }
     else if(req.query.color != "" && req.query.minPrice != "" && req.query.maxPrice != ""){
@@ -152,7 +184,8 @@ function CreateParams(req){
                 ":color" : req.query.color,
                 ":minPrice" : parseInt(req.query.minPrice),
                 ":maxPrice" : parseInt(req.query.maxPrice)
-            }
+            },
+            Limit : parseInt(req.query.Limit)
         }
     }
     else if(req.query.brand != ""){
@@ -164,7 +197,8 @@ function CreateParams(req){
             ExpressionAttributeValues: {
                 ":categoryName": req.query.category,
                 ":brand" : req.query.brand,
-            }
+            },
+            Limit : parseInt(req.query.Limit)
         }
     }
     else if(req.query.color != ""){
@@ -176,7 +210,8 @@ function CreateParams(req){
             ExpressionAttributeValues: {
                 ":categoryName": req.query.category,
                 ":color" : req.query.color,
-            }
+            },
+            Limit : parseInt(req.query.Limit)
         }
     }
     else if(req.query.minPrice != "" & req.query.maxPrice != ""){
@@ -189,7 +224,8 @@ function CreateParams(req){
                 ":categoryName": req.query.category,
                 ":minPrice" : parseInt(req.query.minPrice),
                 ":maxPrice" : parseInt(req.query.maxPrice)
-            }
+            },
+            Limit : parseInt(req.query.Limit)
         }
     }
     else {
@@ -199,7 +235,8 @@ function CreateParams(req){
             KeyConditionExpression: "CategoryName = :categoryName",
             ExpressionAttributeValues: {
                 ":categoryName": req.query.category,
-            }
+            },
+            Limit : parseInt(req.query.Limit)
         }
     }
 }
@@ -207,6 +244,12 @@ function CreateParams(req){
 module.exports.Filter = (req,res) => {
     const promise = new Promise((resolve,reject) => {
         CreateParams(req);
+        if(req.query.pid != null) {
+            paramsFilter.ExclusiveStartKey = {
+                "CategoryName": req.query.category,
+                "ProductID": req.query.pid,
+            }
+        }
         docClient.query(paramsFilter,function(err,data){
             if(err) {
                 console.log(err);
@@ -215,11 +258,16 @@ module.exports.Filter = (req,res) => {
             else {
                 console.log("Query succeeded")
                 console.log(data.Items);
-                return resolve(data.Items);
+                return resolve(data);
             }
         })
     }).then(result => {
-        console.log(result);
-        res.render('listProductByBrand',{products : result});
+        console.log("Sum: " + result.Items.length);
+        console.log(result.LastEvaluatedKey);
+        paramsFilter.Limit = null;
+        docClient.query(paramsFilter,function(err,data){
+            if(err) console.log(err);
+            else res.render('listProductByBrand',{products : result.Items,objLast : result.LastEvaluatedKey,QProduct : data.Items.length,limit : req.query.Limit});
+        })
     });
 }
