@@ -140,7 +140,7 @@ function CreateParams(req){
                 ":minPrice" : parseInt(req.query.minPrice),
                 ":maxPrice" : parseInt(req.query.maxPrice)
             },
-            Limit : parseInt(req.query.Limit)
+            
         }
         
     }
@@ -155,7 +155,7 @@ function CreateParams(req){
                 ":brand" : req.query.brand,
                 ":color" : req.query.color,
             },
-            Limit : parseInt(req.query.Limit)
+           
         }
     }
     else if(req.query.brand != "" && req.query.minPrice != "" && req.query.maxPrice != ""){
@@ -170,7 +170,7 @@ function CreateParams(req){
                 ":minPrice" : parseInt(req.query.minPrice),
                 ":maxPrice" : parseInt(req.query.maxPrice)
             },
-            Limit : parseInt(req.query.Limit)
+           
         }
     }
     else if(req.query.color != "" && req.query.minPrice != "" && req.query.maxPrice != ""){
@@ -185,7 +185,7 @@ function CreateParams(req){
                 ":minPrice" : parseInt(req.query.minPrice),
                 ":maxPrice" : parseInt(req.query.maxPrice)
             },
-            Limit : parseInt(req.query.Limit)
+            
         }
     }
     else if(req.query.brand != ""){
@@ -198,7 +198,7 @@ function CreateParams(req){
                 ":categoryName": req.query.category,
                 ":brand" : req.query.brand,
             },
-            Limit : parseInt(req.query.Limit)
+            
         }
     }
     else if(req.query.color != ""){
@@ -211,7 +211,7 @@ function CreateParams(req){
                 ":categoryName": req.query.category,
                 ":color" : req.query.color,
             },
-            Limit : parseInt(req.query.Limit)
+            
         }
     }
     else if(req.query.minPrice != "" & req.query.maxPrice != ""){
@@ -225,7 +225,7 @@ function CreateParams(req){
                 ":minPrice" : parseInt(req.query.minPrice),
                 ":maxPrice" : parseInt(req.query.maxPrice)
             },
-            Limit : parseInt(req.query.Limit)
+           
         }
     }
     else {
@@ -236,7 +236,7 @@ function CreateParams(req){
             ExpressionAttributeValues: {
                 ":categoryName": req.query.category,
             },
-            Limit : parseInt(req.query.Limit)
+            
         }
     }
 }
@@ -250,6 +250,7 @@ module.exports.Filter = (req,res) => {
                 "ProductID": req.query.pid,
             }
         }
+        //paramsFilter.Limit = req.query.Limit;
         docClient.query(paramsFilter,function(err,data){
             if(err) {
                 console.log(err);

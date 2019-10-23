@@ -3,47 +3,39 @@ var pid_save;
 var Limit = 6;
 var pid = null;
 var first;
-function CreateTagA(pid_save){
-    if(typeof(pid_save) == "string"){
-        var a = document.createElement("a");
-        a.setAttribute("class","page-link");
-        a.setAttribute("href","#");
-        a.setAttribute("data-link-type",obj.getAttribute('data-link-type'));
-        a.setAttribute("data-id","P" + (parseInt(pid_save) - parseInt(Limit)));
-        a.setAttribute("onclick","getProduct(this)");
-        a.setAttribute("id","back")
-        a.innerHTML = "Back"
-        document.getElementById("pagination").appendChild(a);
-    }  
-}
 function CreateTagScript(html){
     var scriptElement = document.createElement( "script" );
         scriptElement.setAttribute("id","handle");
         scriptElement.src = html;
         document.getElementById("script").appendChild(scriptElement);
 }
+function onClickCategory(obj){
+    getProduct(obj);
+    setActive(obj);
+}
+function setContent(html,status_change){
+    if(parseInt(status_change) != 2) document.getElementById("brand").innerHTML = html[0];status_change
+    document.getElementById("listProduct").innerHTML = html[1];    
+    if(document.getElementById("pagination").querySelectorAll(".page-item").length == 0) document.getElementById("pagination").innerHTML = html[2];     
+    if(document.getElementById("handle") != null) document.getElementById("script").removeChild(document.getElementById("handle"));
+    CreateTagScript(html[3]);
+}
 function getProduct(obj,status_change){
+    if(category != obj.getAttribute('data-link-type').split("/")[2]) document.getElementById("pagination").innerHTML = "";
     var pid = obj.getAttribute('data-id');
     if(pid != null) pid_save = pid.split("P")[1];
     var link = obj.getAttribute('data-link-type') + "?pid=" + pid + "&Limit=" + Limit;
-    category = obj.getAttribute('data-link-type').split("/")[2];
+    category = obj.getAttribute('data-link-type').split("/")[2];  
     //alert(typeof(pid_save));
     $.get(link,function(data,status){
         var html = data.split("<p>split</p>");
-
-        if(parseInt(status_change) != 2) document.getElementById("brand").innerHTML = html[0];
-        document.getElementById("listProduct").innerHTML = html[1];
-        //alert(document.getElementById("pagination").querySelectorAll(".page-item"));
-        if(document.getElementById("pagination").querySelectorAll(".page-item").length == 0) document.getElementById("pagination").innerHTML = html[2];
-        //if(document.getElementById("back") != null) document.getElementById("pagination").removeChild(document.getElementById("back"));
-        if(document.getElementById("handle") != null) document.getElementById("script").removeChild(document.getElementById("handle"));
-        //CreateTagA(pid_save);
-        CreateTagScript(html[3]);
+        setContent(html,status_change);   
     })
+    
 }
-var check_brand;
-var check_color;
-var check_price;
+var check_brand = "false";
+var check_color = "false";
+var check_price = "false";
 function Filter(obj){
     var checkbox_brand = document.getElementsByClassName("form-check-input");
     var select_color = document.getElementsByClassName("color");
@@ -52,6 +44,7 @@ function Filter(obj){
     var color = "";
     var minPrice = "";
     var maxPrice = "";
+    if(typeof(category) == "undefined") category = document.getElementById("category-menu").getElementsByClassName("active")[0].firstElementChild.innerHTML;
     for(var i = 0;i < checkbox_brand.length;i++){
         if(checkbox_brand[i].checked == true) brand += checkbox_brand[i].value;
     }
@@ -99,6 +92,16 @@ function Change(obj){
     Filter(obj);
 }
 function GetProductPage(obj){
-    if(check_brand == "true" || check_color == "true" || check_Price == "true") Filter(obj);
-    else getProduct(obj,2);
+    if(check_brand == "true" || check_color == "true" || check_price == "true") Filter(obj);
+    else {
+        //status_change = 2;
+        getProduct(obj,2);
+    }
+}
+function setActive(obj){
+    var category_active = document.getElementById("category-menu").getElementsByClassName("active")[0];
+    //category_active[0].classList.remove("active");
+    category_active.classList.remove("active");
+    //document.getElementById("category-menu").getElementsByClassName("active")[0].innerHTML);
+    obj.parentElement.classList.add("active");
 }

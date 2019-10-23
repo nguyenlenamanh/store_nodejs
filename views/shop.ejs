@@ -70,10 +70,16 @@
                 <!--  Catagories  -->
                 <div class="catagories-menu">
                     <ul id="category-menu" >
-                        <% category.forEach(function(item){ %>
-                            <li class="active">
-                                <a href="#" data-link-type="/shop/<%=item.SortKey%>" onclick="getProduct(this)" class="category-list"><%=item.SortKey%></a>
-                            </li>
+                        <% category.forEach(function(item,index){ %>
+                            <%if(index == 0){%>
+                                <li class="active">
+                                    <a href="#" data-link-type="/shop/<%=item.SortKey%>" onclick="onClickCategory(this)" class="category-list"><%=item.SortKey%></a>
+                                </li>
+                            <%}else{%>
+                                <li >
+                                    <a href="#" data-link-type="/shop/<%=item.SortKey%>" onclick="onClickCategory(this)" class="category-list"><%=item.SortKey%></a>
+                                </li>
+                            <%}%>
                         <% }); %>
                     </ul>
                 </div>
