@@ -4,15 +4,14 @@
     <div class="widget-desc">
         <%var brand_enter = []%>
         <%brand.forEach(function(brand) { %>
-            <%if(brand_enter.length == 0 && brand.Brand != ""){%> 
+            <%if(brand_enter.length == 0 && brand.hasOwnProperty("Brand") == true){%> 
                 <!-- Single Form Check -->
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="<%=brand.Brand%>" id="<%=brand.Brand%>">
                     <label class="form-check-label" for="<%=brand.Brand%>"><%=brand.Brand%></label>
                 </div>
                 <%brand_enter.push(brand.Brand)%>
-            <%}
-            else if(brand_enter.includes(brand.Brand) == false){%>
+            <%}else if(brand_enter.includes(brand.Brand) == false && brand.hasOwnProperty("Brand") == true){%>
                 <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="<%=brand.Brand%>" id="<%=brand.Brand%>">
                         <label class="form-check-label" for="<%=brand.Brand%>"><%=brand.Brand%></label>
@@ -39,6 +38,9 @@
                         <div class="product-meta-data">
                             <div class="line"></div>
                             <p class="product-price">$<%=product.Price%></p>
+                            <a href="/product/<%=product.ProductID%>">
+                                <h6><%=product.CategoryName%></h6>
+                            </a>
                         </div>
                         <!-- Ratings & Cart -->
                         <div class="ratings-cart text-right">
@@ -74,11 +76,11 @@
                                             <a class="page-link" href="#" data-link-type="/shop/<%=objLast.CategoryName%>" data-id="P<%=parseInt(objLast.ProductID.split('P')[1]) - limit%>" onclick="GetProductPage(this)"><%=i%></a>
                                     </li>
                                 <%}else if(i == 2){%>
-                                    <li class="page-item active">
+                                    <li class="page-item">
                                             <a class="page-link" href="#" data-link-type="/shop/<%=objLast.CategoryName%>" data-id="P<%=parseInt(objLast.ProductID.split('P')[1])%>" onclick="GetProductPage(this)"><%=i%></a>
                                     </li>
                                 <%}else{%>
-                                    <li class="page-item active">
+                                    <li class="page-item">
                                             <a class="page-link" href="#" data-link-type="/shop/<%=objLast.CategoryName%>" data-id="P<%=parseInt(objLast.ProductID.split('P')[1]) + limit* (i-2)%>" onclick="GetProductPage(this)"><%=i%></a>
                                     </li>
                                 <%}%>

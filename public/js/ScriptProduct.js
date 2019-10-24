@@ -14,7 +14,7 @@ function onClickCategory(obj){
     setActive(obj);
 }
 function setContent(html,status_change){
-    if(parseInt(status_change) != 2) document.getElementById("brand").innerHTML = html[0];status_change
+    if(parseInt(status_change) != 2) document.getElementById("brand").innerHTML = html[0];
     document.getElementById("listProduct").innerHTML = html[1];    
     if(document.getElementById("pagination").querySelectorAll(".page-item").length == 0) document.getElementById("pagination").innerHTML = html[2];     
     if(document.getElementById("handle") != null) document.getElementById("script").removeChild(document.getElementById("handle"));
@@ -26,16 +26,16 @@ function getProduct(obj,status_change){
     if(pid != null) pid_save = pid.split("P")[1];
     var link = obj.getAttribute('data-link-type') + "?pid=" + pid + "&Limit=" + Limit;
     category = obj.getAttribute('data-link-type').split("/")[2];  
-    //alert(typeof(pid_save));
     $.get(link,function(data,status){
         var html = data.split("<p>split</p>");
         setContent(html,status_change);   
     })
-    
 }
+
 var check_brand = "false";
 var check_color = "false";
 var check_price = "false";
+var link_save = "";
 function Filter(obj){
     var checkbox_brand = document.getElementsByClassName("form-check-input");
     var select_color = document.getElementsByClassName("color");
@@ -61,21 +61,18 @@ function Filter(obj){
     }
     if(minPrice != "" || maxPrice != "") check_price = "true";
     else check_price = "false";
-    /*if(parseInt(price[1].split("$")[1]) < 1000){
-        //alert(price[0].split("$")[1]);
-        minPrice = price[0].split("$")[1];
-        maxPrice = price[1].split("$")[1];
-    }*/
     var link;
     if(obj.getAttribute('data-id') == null)
         link = "/Filter?category=" + category + "&brand=" + brand + "&color=" + color + "&minPrice=" + minPrice + "&maxPrice=" + maxPrice + "&Limit=" + Limit;
     else link = "/Filter?category=" + category + "&brand=" + brand + "&color=" + color + "&minPrice=" + minPrice + "&maxPrice=" + maxPrice + "&Limit=" + Limit + "&pid=" + obj.getAttribute('data-id'); 
     //alert(link);
-
     $.get(link,function(data,status){
         var html = data.split("<p>split</p>");
         document.getElementById("listProduct").innerHTML = html[0];
-        document.getElementById("pagination").innerHTML = html[1];
+        if(link_save != link) {
+            document.getElementById("pagination").innerHTML = html[1];
+            link_save = link;
+        }
         if(document.getElementById("handle") != null) document.getElementById("script").removeChild(document.getElementById("handle"));
         var scriptElement = document.createElement( "script" );
         scriptElement.setAttribute("id","handle");
@@ -92,16 +89,19 @@ function Change(obj){
     Filter(obj);
 }
 function GetProductPage(obj){
+    setActivePage(obj);
     if(check_brand == "true" || check_color == "true" || check_price == "true") Filter(obj);
     else {
-        //status_change = 2;
         getProduct(obj,2);
     }
 }
 function setActive(obj){
     var category_active = document.getElementById("category-menu").getElementsByClassName("active")[0];
-    //category_active[0].classList.remove("active");
     category_active.classList.remove("active");
-    //document.getElementById("category-menu").getElementsByClassName("active")[0].innerHTML);
+    obj.parentElement.classList.add("active");
+}
+function setActivePage(obj){
+    var page_active = document.getElementById("list-page").getElementsByClassName("active")[0];
+    page_active.classList.remove("active");
     obj.parentElement.classList.add("active");
 }
