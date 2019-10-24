@@ -112,7 +112,7 @@ function createNewOrder(userID) {
     })
 }
 
-module.exports.addProductToOrder = (orderID, productID) => {
+module.exports.addProductToOrder = (orderID, productID, num = 1) => {
     return new Promise(async (resolve,reject) => {
         var product = await getProductByID(productID);
 
@@ -126,7 +126,7 @@ module.exports.addProductToOrder = (orderID, productID) => {
             if(added) console.log('added new order'); 
         }
         else {
-            var edited = await setQuantityOfProductInOrder(orderID,productID,1);
+            var edited = await setQuantityOfProductInOrder(orderID,productID,num);
 
             if(edited) console.log('edited order'); 
         }

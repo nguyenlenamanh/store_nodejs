@@ -5,8 +5,7 @@ AWS.config.update({
     accessKeyId: "accessKeyId",
     secretAccessKey: "secretAccessKey",
     endpoint: "http://localhost:8000"
-  });
-
+});
 
 var docClient = new AWS.DynamoDB.DocumentClient();
 
@@ -38,7 +37,9 @@ module.exports.requiredAuth = (req,res,next) => {
                 res.redirect('/auth/login');
                 return;
             }
+
             next();
         }
     });
 }
+

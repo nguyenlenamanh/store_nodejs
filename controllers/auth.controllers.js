@@ -7,6 +7,8 @@ AWS.config.update({
     endpoint: "http://localhost:8000"
 });
 
+var merger = require('../middleware/merge');
+
 var docClient = new AWS.DynamoDB.DocumentClient();
 
 module.exports.login = (req,res) => {
@@ -42,7 +44,7 @@ module.exports.loginPost = (req,res) => {
     var email = req.body.email;
     var password = req.body.password;
     
-    getUser(email,(respone) => {
+    getUser(email,async (respone) => {
         if(respone.length == 0) {
             res.render('login',{
                 showerror: true
@@ -54,6 +56,15 @@ module.exports.loginPost = (req,res) => {
             res.cookie('userID',respone[0].UserID,{
                 signed: true
             });
+
+            var userID = respone[0].UserID;
+            var localData = req.cookies.cart;
+
+            var isSuccess = await merger.Merge(localData,userID);
+            if(isSuccess) {
+                res.clearCookie("cart");
+            }
+
             res.redirect('/');
             return;
         }
