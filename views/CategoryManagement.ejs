@@ -1,0 +1,19 @@
+<div class="col-lg-12">
+    <!-- TOP CAMPAIGN-->
+    <div class="top-campaign">
+        <h3 class="title-3 m-b-30">List Category</h3>
+        <div class="table-responsive">
+            <table class="table table-top-campaign">
+                <tbody>
+                    <% data.forEach(function(category,index){%>
+                            <tr>
+                                <td><%=index + 1%></td>
+                                <td><%=category.SortKey%></td>
+                            </tr>
+                    <%})%>                
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--  END TOP CAMPAIGN-->
+</div>
