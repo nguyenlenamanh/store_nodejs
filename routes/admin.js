@@ -9,4 +9,16 @@ router.get('/',function(req,res){
 router.get('/CategoryManagement',function(req,res){
     adminController.CategoryManagement(res);
 });
+router.post('/AddCategory',function(req,res){
+    adminController.AddCategory(req,res);
+});
+router.get('/ProductManagement/:category',function(req,res){
+    adminController.ProductManagement(req,res);
+});
+router.get('/ListProductAdmin/:category',function(req,res){
+    adminController.ListProductAdmin(req,res);
+});
+router.get('/AddProduct',function(req,res){
+    adminController.ReturnFormAdd(res);
+});
 module.exports = router;

@@ -167,10 +167,10 @@
                     <ul class="list-unstyled navbar__list">
                         <li class="active">
                             <a href="#" onclick="getListCategory()">
-                                <i class="fas fa-chart-bar" onclick="getListCategory()"></i>Category</a>
+                                <i class="fas fa-chart-bar"></i>Category</a>
                         </li>
                         <li>
-                            <a href="#">
+                            <a href="#" onclick="getListProduct()"> 
                                 <i class="fas fa-table"></i>Product</a>
                         </li>
                         <li>
@@ -381,7 +381,30 @@
         </div>
 
     </div>
-
+    <div class="modal fade" id="mediumModal" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="mediumModalLabel">Add Category</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                            <div class="row form-group">
+                                        <div class="col-12 col-md-12">
+                                            <input type="text" id="text-input-category" name="text-input" placeholder="Category Name" class="form-control">
+                                            <small class="form-text text-muted"></small>
+                                    </div>
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="AddCategory('text-input-category')">Confirm</button>
+                    </div>
+                </div>
+            </div>
+    </div>
     <!-- Jquery JS-->
     <script src="vendor/admin/jquery-3.2.1.min.js"></script>
     <!-- Bootstrap JS-->
