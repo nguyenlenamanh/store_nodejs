@@ -31,4 +31,21 @@ router.get('/AddProduct',function(req,res){
 router.post('/AddProduct',jsonParser,function(req,res){
     adminController.AddProduct(req,res);
 });
+
+router.get('/OrderManagement',jsonParser,function(req,res){
+    adminController.OrderManagement(req,res);
+});
+
+router.get('/OrderManagementDetail',jsonParser,function(req,res){
+    adminController.OrderManagementDetail(req,res);
+});
+
+router.post('/setStatus',jsonParser,function(req,res){
+    adminController.setStatus(req,res);
+});
+
+router.get('/getOrderDetail/:orderID',function(req,res){
+    adminController.getOrderDetail(req,res);
+});
+
 module.exports = router;

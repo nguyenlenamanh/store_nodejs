@@ -60,3 +60,31 @@ function submit(category,product_name,brand,price){
         location.reload();
     })
 }
+
+function Save(id) {
+    //alert(id);
+
+    var dpId = '#SelectLm' + id;
+
+    var dpValue = $(dpId).val();
+
+    $.post("/admin/setStatus",{
+        "Varies": id,
+        "Status": dpValue
+    },function(data,status){
+        $.get("/admin/OrderManagementDetail",function(data,status){
+            var content = document.getElementById('orders');
+            content.innerHTML = data;
+        })
+    });
+}
+
+$(document).on("click", ".open-AddBookDialog", function () {
+    var myBookId = $(this).data('id');
+    $(".modal-body #bookId").val( myBookId );
+
+    alert(myBookId);
+    // As pointed out in comments, 
+    // it is unnecessary to have to manually call the modal.
+    // $('#addBookDialog').modal('show');
+});

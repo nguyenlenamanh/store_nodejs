@@ -221,3 +221,181 @@ function AddProduct(req,res,pid){
         }
     })
 }
+
+
+
+module.exports.OrderManagement = (req,res) => {
+    var paramsOrderID = {
+        TableName : "Users",
+        IndexName: "StatusIndex",
+        KeyConditionExpression: "#st = :status",
+        ExpressionAttributeNames:{
+            "#st": "Status"
+        },
+        ExpressionAttributeValues: {
+            ":status": "Waiting"
+        }
+    }
+    const promise = new Promise((resolve, reject) => {
+        docClient.query(paramsOrderID, function(err, data) {
+            if (err) {
+                console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+                reject();
+            } else {
+                console.log("Query succeeded.");
+                return resolve(data.Items)
+            }
+        });
+    }).then(result => {
+        console.log(result);
+        //res.render('FormAddProduct',{categorys : result});
+        res.render('OrderManagement',{orders : result});
+    });
+    
+    //
+}
+
+module.exports.setStatus = (req,res) => {
+
+    var varies = req.body.Varies;
+    var status = req.body.Status;
+
+    var paramsOrderID = {
+        TableName : "Users",
+        IndexName: "VariesIndex",
+        KeyConditionExpression: "Varies = :varies",
+        ExpressionAttributeValues: {
+            ":varies": varies
+        }
+    }
+
+    const promise = new Promise((resolve, reject) => {
+        docClient.query(paramsOrderID, function(err, data) {
+            if (err) {
+                console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+                reject();
+            } else {
+                /*console.log('im here');
+                console.log(data.Items[0]);*/
+                return resolve(data.Items[0])
+            }
+        });
+    }).then(result => {
+        var params = {
+            TableName: "Users",
+            Key:{
+                "UserID": result.UserID,
+                "Varies": result.Varies
+            },
+            UpdateExpression: "set #st = :status",
+            ExpressionAttributeNames:{
+                "#st": "Status"
+            },
+            ExpressionAttributeValues:{
+                ":status": status
+            },
+            ReturnValues:"UPDATED_NEW"
+        };
+        docClient.update(params, function(err, data) {
+            if (err) {
+                res.status(404);
+            } else {
+                res.status(200);
+            }
+            res.end();
+        });
+    });
+}
+
+module.exports.OrderManagementDetail = (req,res) => {
+    var paramsOrderID = {
+        TableName : "Users",
+        IndexName: "StatusIndex",
+        KeyConditionExpression: "#st = :status",
+        ExpressionAttributeNames:{
+            "#st": "Status"
+        },
+        ExpressionAttributeValues: {
+            ":status": "Waiting"
+        }
+    }
+    const promise = new Promise((resolve, reject) => {
+        docClient.query(paramsOrderID, function(err, data) {
+            if (err) {
+                console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+                reject();
+            } else {
+                console.log("Query succeeded.");
+                return resolve(data.Items);
+            }
+        });
+    }).then(result => {
+        console.log(result);
+        //res.render('FormAddProduct',{categorys : result});
+        res.render('OrderManagementDetail',{orders : result});
+    });
+}
+
+function getProductByID(productID) {
+    return new Promise((resolve,reject) => {
+        var paramsProductID = {
+            TableName : "Products",
+            IndexName : "ProductIDIndex",
+            KeyConditionExpression: "ProductID = :productID",
+            ExpressionAttributeValues: {
+                ":productID": productID
+            }
+        };
+        
+        docClient.query(paramsProductID, function(err, data) {
+            if (err) {
+                return reject(err);
+            } else {
+                return resolve(data.Items[0]);
+            }
+        });
+    });
+}
+
+function asyncFunction(item) {
+    
+    return new Promise(async (resolve, reject) => {
+        var product = await getProductByID(item.ProductID);
+        var name = product.ProductName;
+
+        item.name = name;
+        resolve(item);
+    });
+ }
+
+module.exports.getOrderDetail = (req,res) => {
+
+    var orderID = req.params.orderID;
+
+    console.log(orderID);
+
+    var paramsOrderDetail = {
+        TableName : "Orders",
+        KeyConditionExpression: "OrderID = :orderID",
+        ExpressionAttributeValues: {
+            ":orderID": orderID
+        }
+    };
+    
+    new Promise((resolve, reject) => {
+        docClient.query(paramsOrderDetail, function(err, data) {
+            if (err) {
+                console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+            } else {
+                return resolve(data.Items);
+            }
+        });
+    }).then(result => {
+        let promiseArray = result.map(asyncFunction);
+
+        Promise.all(promiseArray).then(result => {
+            console.log(result);
+        });
+        
+    });
+}
