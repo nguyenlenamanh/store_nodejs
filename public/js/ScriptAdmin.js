@@ -8,9 +8,8 @@ function getListCategory(){
 function AddCategory(id){
     var value = document.getElementById(id).value;
     var link = "/admin/AddCategory"
-    $.post(link,JSON.stringify({'categoryName' : value}),function(data,status){
-        var content = document.getElementById('main_content');
-        content.innerHTML = data;
+    $.post(link,{'categoryName' : value},function(data){
+        location.reload();
    })
 }
 function getListProduct(){
@@ -34,5 +33,30 @@ function getForm(){
     $.get(link,function(data,status){
         var content = document.getElementById('main_content');
         content.innerHTML = data;
+    })
+}
+var listPic = [];
+function picture(){
+    listPic = [];
+    var file = document.getElementById("files");
+    for(var i = 0;i<file.files.length;i++){
+        listPic.push(file.files[i]);
+    }
+}
+function submit(category,product_name,brand,price){
+    var link = "/admin/AddProduct";
+    var cate = document.getElementById(category).value;
+    var productName = document.getElementById(product_name).value;
+    var brand = document.getElementById(brand).value;
+    var price = document.getElementById(price).value;  
+    alert(listPic[0].name);
+    $.post(link,{
+        "CategoryName" :cate,
+        "ProductName" : productName,
+        "Brand" : brand,
+        "Price" : price,
+        "Pictures" : listPic
+    },function(data,status){
+        location.reload();
     })
 }

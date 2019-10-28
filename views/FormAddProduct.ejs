@@ -3,14 +3,14 @@
             <strong>Add Product</strong>
         </div>
         <div class="card-body card-block">
-            <form action="" method="post" class="form-horizontal">
+            <form action="/admin/AddProduct" method="post" class="form-horizontal" enctype="multipart/form-data">
                 <div class="row form-group">
                     <div class="col col-md-3">
-                        <label for="product_name" class=" form-control-label">Product Name:</label>
+                        <label for="product_name" class=" form-control-label">Product Name</label>
                     </div>
                     <div class="col-12 col-md-9">
-                        <input type="text" id="product_name" name="product_name" placeholder="Enter product name" class="form-control">
-                        <span class="help-block">Please enter product name</span>
+                        <input type="text" id="product_name" name="ProductName" placeholder="Enter product name" class="form-control">
+                        <span class="help-block"></span>
                     </div>
                 </div>
                 <div class="row form-group">
@@ -18,17 +18,26 @@
                         <label for="brand" class=" form-control-label">Brand</label>
                     </div>
                     <div class="col-12 col-md-9">
-                        <input type="text" id="brand" name="brand" placeholder="Enter brand" class="form-control">
-                        <span class="help-block">Please enter brand</span>
+                        <input type="text" id="brand" name="Brand" placeholder="Enter brand" class="form-control">
+                        <span class="help-block"></span>
                     </div>
                 </div>
                 <div class="row form-group">
                         <div class="col col-md-3">
-                            <label for="brand" class=" form-control-label">Brand</label>
+                            <label for="brand" class=" form-control-label">Price</label>
                         </div>
                         <div class="col-12 col-md-9">
-                            <input type="text" id="brand" name="brand" placeholder="Enter brand" class="form-control">
-                            <span class="help-block">Please enter price</span>
+                            <input type="text" id="price" name="Price" placeholder="Enter price" class="form-control">
+                            <span class="help-block"></span>
+                        </div>
+                </div>
+                <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="files" class=" form-control-label">Picture</label>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <input id="files" type="file" class="form-control" name = "files" multiple/>
+                            <span class="help-block"></span>
                         </div>
                 </div>
                 <div class="row form-group">
@@ -36,7 +45,7 @@
                         <label for="category" class=" form-control-label">Category</label>
                     </div>
                     <div class="col-12 col-md-9">
-                        <select class="form-control form-control-md" name="property" tabindex="-1" aria-hidden="true" id="Category">
+                        <select class="form-control form-control-md" name="CategoryName" tabindex="-1" aria-hidden="true" id="Category">
                                 <%categorys.forEach(function(category,index){%>
                                     <%if(index == 0){%> 
                                         <option selected="selected" value="<%=category.SortKey%>"><%=category.SortKey%></option>
@@ -46,15 +55,15 @@
                                 <%})%>
                         </select>
                     </div>
+                </div>
+                <div class="card-footer">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fa fa-dot-circle-o"></i> Submit
+                        </button>
+                        <button type="reset" class="btn btn-danger btn-sm">
+                            <i class="fa fa-ban"></i> Reset
+                        </button>
                     </div>
             </form>
-        </div>
-        <div class="card-footer">
-            <button type="submit" class="btn btn-primary btn-sm">
-                <i class="fa fa-dot-circle-o"></i> Submit
-            </button>
-            <button type="reset" class="btn btn-danger btn-sm">
-                <i class="fa fa-ban"></i> Reset
-            </button>
-        </div>
+        </div>     
     </div>

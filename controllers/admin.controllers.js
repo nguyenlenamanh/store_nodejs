@@ -1,4 +1,6 @@
 var AWS = require("aws-sdk");
+var formidable = require("formidable");
+var fs = require("fs");
 
 AWS.config.update({
     region: "us-west-2",
@@ -24,7 +26,7 @@ module.exports.AddCategory = (req,res) => {
     docClient.put(params,function(err,data){
         if(err) console.log(err);
         else {
-            ReturnCategoryList(res);
+            res.end();
         }
     })
 }
@@ -156,4 +158,66 @@ module.exports.ReturnFormAdd = (res) => {
         console.log(result);
         res.render('FormAddProduct',{categorys : result});
     });
+}
+module.exports.AddProduct = (req,res) => {
+    var randomID = "P" + parseInt(Math.random() * 1000);
+        var paramCheck  = {
+            TableName : "Products",
+            IndexName : "ProductIDIndex",
+            KeyConditionExpression: "ProductID = :productID",
+            ExpressionAttributeValues: {
+                ":productID": randomID
+            }
+        }
+        docClient.query(paramCheck,function check(err,data){
+            if(err) console.log(JSON.stringify(err));
+            else {
+                  if(data.Items.length == 0) {
+                    AddProduct(req,res,randomID);
+                }else {
+                    randomID = "P" + parseInt(Math.random() * 1000);
+                    paramCheck.ExpressionAttributeValues = {
+                        ":productID": randomID
+                    }
+                    docClient.query(paramCheck,check());
+                }
+            }
+        })   
+}
+function AddProduct(req,res,pid){
+    console.log(req.body.CategoryName);
+    console.log(req.body.ProductName);
+    let form = new formidable.IncomingForm();
+    form.uploadDir = "public/img/"
+    form.parse(req, function(err, fields, files){
+        if(err) console.log(err);
+        else {
+            let tmpPath = files.files.path;
+            let newPath = form.uploadDir + files.files.name;
+            fs.rename(tmpPath, newPath, (err) => {
+                if (err) throw err;
+                fs.readFile(newPath, (err, fileUploaded) => {
+                    if(err) console.log(err);
+                    console.log("Saved");
+                });
+            });
+        }
+    })
+    var params = {
+        TableName : "Products",
+        Item : {
+            "CategoryName" : req.body.CategoryName,
+            "ProductID" : pid,
+            "ProductName" : req.body.ProductName,
+            "Brand" : req.body.Brand,
+            "Price" : req.body.Price,
+            "Picture" : req.body.files
+        }
+    }
+    docClient.put(params,function(err,data){
+        if(err) console.log(err);
+        else {
+            res.end();
+        }
+    })
 }
