@@ -38,16 +38,13 @@
                             <td><%=product.TotalView%></td>
                             <td>
                                 <div class="table-data-feature">
-                                    <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Send">
-                                        <i class="zmdi zmdi-mail-send"></i>
-                                    </button>
-                                    <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit">
+                                    <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" data-id="<%=product.ProductID%>" onclick="getFormEdit(this)">
                                         <i class="zmdi zmdi-edit"></i>
                                     </button>
-                                    <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
+                                    <button class="item" data-toggle="modal" data-placement="top" title="" data-original-title="Delete" data-target="#mediumModalDelete" data-id="<%=product.ProductID%>" data-cate="<%=product.CategoryName%>" onclick="setPID(this)">
                                         <i class="zmdi zmdi-delete"></i>
                                     </button>
-                                    <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="More">
+                                    <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Detail">
                                         <i class="zmdi zmdi-more"></i>
                                     </button>
                                 </div>

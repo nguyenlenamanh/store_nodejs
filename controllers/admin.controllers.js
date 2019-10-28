@@ -173,6 +173,7 @@ module.exports.AddProduct = (req,res) => {
             if(err) console.log(JSON.stringify(err));
             else {
                   if(data.Items.length == 0) {
+                    console.log("Begin Add");
                     AddProduct(req,res,randomID);
                 }else {
                     randomID = "P" + parseInt(Math.random() * 1000);
@@ -185,8 +186,7 @@ module.exports.AddProduct = (req,res) => {
         })   
 }
 function AddProduct(req,res,pid){
-    console.log(req.body.CategoryName);
-    console.log(req.body.ProductName);
+    let listName = [];
     let form = new formidable.IncomingForm();
     form.uploadDir = "public/img/"
     form.parse(req, function(err, fields, files){
@@ -195,29 +195,161 @@ function AddProduct(req,res,pid){
             let tmpPath = files.files.path;
             let newPath = form.uploadDir + files.files.name;
             fs.rename(tmpPath, newPath, (err) => {
-                if (err) throw err;
-                fs.readFile(newPath, (err, fileUploaded) => {
+                if (err) console.log(err) ;
+                else {
+                    fs.readFile(newPath, (err, fileUploaded) => {
+                        if(err) console.log(err);
+                        console.log("Saved");
+                    });
+                }
+            });
+            var params = {
+                TableName : "Products",
+                Item : {
+                    "CategoryName" : fields.CategoryName,
+                    "ProductID" : pid,
+                    "ProductName" : fields.ProductName,
+                    "Brand" : fields.Brand,
+                    "Price" : fields.Price,
+                    "Picture" : files.files.name
+                }
+            }
+            docClient.put(params,function(err,data){
+                if(err) console.log(err);
+                else {
+                    ReturnListProduct(req,res);
+                }
+            })
+        }
+    })
+}
+function ReturnFormEdit(req,res){
+    var paramsProductID = {
+        TableName : "Products",
+        IndexName : "ProductIDIndex",
+        KeyConditionExpression: "ProductID = :productID",
+        ExpressionAttributeValues: {
+            ":productID": req.params.pid
+        }
+    };
+    docClient.query(paramsProductID,(err,data) => {
+        if(err) console.log(JSON.stringify(err));
+        else {
+            console.log(data.Items);
+            var paramsCategories = {
+                TableName : "Others",
+                ProjectionExpression: "SortKey",
+                KeyConditionExpression: "PrimaryKey = :primaryKey",
+                ExpressionAttributeValues: {
+                    ":primaryKey": "Category"
+                }
+            };
+            docClient.query(paramsCategories,function(err,data2){
+                if(err) console.log(err);
+                else {
+                    res.render("FormEditProduct",{product : data.Items[0],categorys : data2.Items});  
+                }
+            })        
+              
+        }
+    })
+}
+module.exports.ReturnFormEdit = (req,res) => {
+    ReturnFormEdit(req,res);
+}
+function EditProduct(req,res){
+
+    let form = new formidable.IncomingForm();
+    form.uploadDir = "public/img/"
+    form.parse(req, function(err, fields, files){
+        if(err) console.log(err);
+        else {
+            console.log(fields.Brand);
+            console.log(fields.ProductID);
+            console.log(fields.CategoryName);
+            console.log(fields.Price);
+            let tmpPath = files.files.path;
+            let newPath = form.uploadDir + files.files.name;
+            fs.rename(tmpPath, newPath, (err) => {
+                if (err){
+                    var params = {
+                        TableName: "Products",
+                        Key:{
+                            "CategoryName": fields.CategoryName,
+                            "ProductID": fields.ProductID
+                        },
+                        UpdateExpression: "set Brand = :b, Price=:p,ProductName = :pn",
+                        ExpressionAttributeValues:{
+                            ":b":fields.Brand,
+                            ":p": fields.Price,
+                            ":pn" : fields.ProductName
+                        },
+                        ReturnValues:"UPDATED_NEW"
+                    };
+                    docClient.update(params,function(err,data){
+                        if(err) console.log(err);
+                        else {
+                            ReturnListProduct(req,res);
+                        }
+                    })
+                }
+                else {
+                    fs.readFile(newPath, (err, fileUploaded) => {
                     if(err) console.log(err);
                     console.log("Saved");
+                    var params = {
+                        TableName: "Products",
+                        Key:{
+                            "CategoryName": fields.CategoryName,
+                            "ProductID": fields.ProductID
+                        },
+                        UpdateExpression: "set Brand = :b, Price=:p, Picture=:pt,ProductName = :pn",
+                        ExpressionAttributeValues:{
+                            ":b":fields.Brand,
+                            ":p": fields.Price,
+                            ":pt":files.files.name,
+                            ":pn" : fields.ProductName
+                        },
+                        ReturnValues:"UPDATED_NEW"
+                    };
+                    docClient.update(params,function(err,data){
+                        if(err) console.log(err);
+                        else {
+                            ReturnListProduct(req,res);
+                        }
+                    })
                 });
+            }
             });
         }
     })
+}
+module.exports.EditProduct = (req,res) => {
+    EditProduct(req,res);
+}
+module.exports.DeleteProduct = (req,res) => {
+    console.log(req.query.category);
+    console.log(req.query.pid);
     var params = {
-        TableName : "Products",
-        Item : {
-            "CategoryName" : req.body.CategoryName,
-            "ProductID" : pid,
-            "ProductName" : req.body.ProductName,
-            "Brand" : req.body.Brand,
-            "Price" : req.body.Price,
-            "Picture" : req.body.files
+        TableName: "Products",
+        Key:{
+            "CategoryName": req.query.category,
+            "ProductID": req.params.pid
+        },
+        ConditionExpression:"ProductID = :val",
+        ExpressionAttributeValues: {
+            ":val": req.params.pid,
+            
         }
-    }
-    docClient.put(params,function(err,data){
-        if(err) console.log(err);
-        else {
-            res.end();
+    };
+    console.log("Attempting a conditional delete...");
+    docClient.delete(params, function(err, data) {
+        if (err) {
+            console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
+        } else {
+            console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
+            ReturnListProduct(req,res);
         }
-    })
+    });
+    
 }

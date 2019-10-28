@@ -2,11 +2,8 @@ var express = require('express');
 var adminController = require('../controllers/admin.controllers');
 //Thêm 28-10-2019
 var bodyParser = require('body-parser');
-var jsonParser = bodyParser.json();
 
 var router = express.Router();
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: true }));
 router.get('/',function(req,res){
     res.render('admin',{page : ""});
 });
@@ -28,7 +25,16 @@ router.get('/ListProductAdmin/:category',function(req,res){
 router.get('/AddProduct',function(req,res){
     adminController.ReturnFormAdd(res);
 });
-router.post('/AddProduct',jsonParser,function(req,res){
+router.post('/AddProduct',function(req,res){
     adminController.AddProduct(req,res);
 });
+router.get("/EditProduct/:pid",function(req,res){
+    adminController.ReturnFormEdit(req,res);
+})
+router.post("/EditProduct",function(req,res){
+    adminController.EditProduct(req,res);
+})
+router.post("/DeleteProduct/:pid",function(req,res){
+    adminController.DeleteProduct(req,res);
+})
 module.exports = router;
